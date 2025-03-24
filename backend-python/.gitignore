@@ -1,0 +1,7 @@
+AGENTS_DOCS.md
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
