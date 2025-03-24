@@ -3,6 +3,8 @@ import { Button } from "./button";
 import { useState } from "react";
 import { TweetCardProps } from "./tweet-card";
 import { toast } from "sonner";
+import dynamic from 'next/dynamic';
+const ReplyGenerator = dynamic(() => import('@/components/ReplyGenerator'), { ssr: false });
 
 interface ReplyDialogProps {
   tweet: TweetCardProps;
@@ -12,64 +14,15 @@ interface ReplyDialogProps {
 export function ReplyDialog({ tweet, children }: ReplyDialogProps) {
   const [open, setOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [replySent, setReplySent] = useState(false);
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
-    if (open) {
-      generateSuggestions();
-      setReplySent(false);
-    } else {
+    if (!open) {
       setReplyText("");
-      setAiSuggestions([]);
-    }
-  };
-
-  const generateSuggestions = async () => {
-    setIsGenerating(true);
-    
-    try {
-      // In a real app, we'd call an API endpoint for AI-generated suggestions
-      // For now, we'll use smarter template-based suggestions
-      const tweetText = tweet.content.toLowerCase();
-      
-      // Generate contextual suggestions based on tweet content
-      const suggestions = [];
-      
-      // Check for key topics in the tweet
-      if (tweetText.includes('ai') || tweetText.includes('artificial intelligence')) {
-        suggestions.push("As someone working in AI, I'd love to hear more about your thoughts on the technology's long-term impact.");
-        suggestions.push("Have you read any research about how AI could help solve this specific problem?");
-      }
-      
-      if (tweetText.includes('blockchain') || tweetText.includes('crypto') || tweetText.includes('bitcoin')) {
-        suggestions.push("Interesting take! What's your view on how regulation might affect this in the next year?");
-        suggestions.push("I've been researching this area too - have you looked at the recent developments in layer 2 solutions?");
-      }
-      
-      if (tweetText.includes('climate') || tweetText.includes('environment')) {
-        suggestions.push("This is such an important point. Have you seen any promising tech solutions to this climate issue?");
-        suggestions.push("I've been thinking about this problem too. What actions do you think individuals vs corporations should take?");
-      }
-      
-      // General engaging replies that work for any topic
-      suggestions.push(`I've been following your work on this. What data sources informed your perspective?`);
-      suggestions.push(`This is fascinating! Do you think this trend will accelerate or slow down in the next few years?`);
-      suggestions.push(`Great point! I'd add that we need to consider ${tweet.content.split(" ").slice(0, 3).join(" ")} from multiple angles.`);
-      
-      setAiSuggestions(suggestions);
-    } catch (error) {
-      console.error('Error generating suggestions:', error);
-      setAiSuggestions([
-        `I completely agree with your take on ${tweet.content.split(" ").slice(0, 3).join(" ")}...`,
-        `This is a really insightful point. Have you considered the opposite perspective?`,
-        `I've been thinking about this topic a lot. Would love to hear more about your experiences with it.`,
-        `Interesting! Do you have any recommended resources to learn more about this?`,
-      ]);
-    } finally {
-      setIsGenerating(false);
+      setReplySent(false);
+      setShowAiSuggestions(false);
     }
   };
 
@@ -105,16 +58,12 @@ export function ReplyDialog({ tweet, children }: ReplyDialogProps) {
     }
   };
 
-  const applySuggestion = (suggestion: string) => {
-    setReplyText(suggestion);
-  };
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px] overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Reply to @{tweet.author.handle}</DialogTitle>
           <DialogDescription>
@@ -161,35 +110,25 @@ export function ReplyDialog({ tweet, children }: ReplyDialogProps) {
                   )}
                 </div>
               </div>
+              
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="text-sm font-medium">AI-Powered Reply Suggestions</h4>
-                  <button
-                    onClick={generateSuggestions}
-                    disabled={isGenerating}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 disabled:opacity-50"
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowAiSuggestions(!showAiSuggestions)}
                   >
-                    Refresh
-                  </button>
+                    {showAiSuggestions ? "Hide AI Suggestions" : "Show AI Suggestions"}
+                  </Button>
                 </div>
-                {isGenerating ? (
-                  <div className="space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-md animate-pulse" />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
-                    {aiSuggestions.map((suggestion, i) => (
-                      <button
-                        key={i}
-                        onClick={() => applySuggestion(suggestion)}
-                        className="text-left w-full text-sm p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
+                
+                {showAiSuggestions && (
+                  <ReplyGenerator
+                    tweetContent={tweet.content}
+                    tweetAuthor={tweet.author.handle}
+                    onReplySelect={(reply) => setReplyText(reply)}
+                  />
                 )}
               </div>
             </>

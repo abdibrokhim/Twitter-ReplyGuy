@@ -102,7 +102,7 @@ export function TweetFeed({ filters }: TweetFeedProps) {
           ) : tweets.length > 0 ? (
             tweets.map(tweet => (
               <TweetCard 
-                key={tweet.id} 
+                key={tweet.id}
                 {...tweet}
                 isSaved={savedTweets.some(saved => saved.id === tweet.id)}
                 onSave={() => toggleSaveTweet(tweet)}
@@ -127,7 +127,7 @@ export function TweetFeed({ filters }: TweetFeedProps) {
           {savedTweets.length > 0 ? (
             savedTweets.map(tweet => (
               <TweetCard 
-                key={tweet.id} 
+                key={tweet.id}
                 {...tweet}
                 isSaved={true}
                 onSave={() => toggleSaveTweet(tweet)}

@@ -14,7 +14,7 @@ export default function Home() {
     onlyVerified: false,
     minViralPotential: 50,
   });
-  
+
   const handleFiltersChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
   };

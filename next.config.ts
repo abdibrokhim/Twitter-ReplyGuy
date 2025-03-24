@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
     TWITTER_ACCESS_TOKEN: process.env.TWITTER_ACCESS_TOKEN,
     TWITTER_ACCESS_SECRET: process.env.TWITTER_ACCESS_SECRET,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_MODEL: process.env.OPENAI_MODEL,
+    AIML_API_KEY: process.env.AIML_API_KEY,
+    TOOLHOUSE_API_KEY: process.env.TOOLHOUSE_API_KEY,
     RUN_ENV: process.env.RUN_ENV,
   },
 };

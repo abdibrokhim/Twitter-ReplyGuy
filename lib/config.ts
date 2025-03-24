@@ -9,6 +9,13 @@ const config = {
   },
   openai: {
     apiKey: process.env.OPENAI_API_KEY || '',
+    model: process.env.OPENAI_MODEL || '',
+  },
+  aiml: {
+    apiKey: process.env.AIML_API_KEY || '',
+  },
+  toolhouse: {
+    apiKey: process.env.TOOLHOUSE_API_KEY || '',
   }
 };
 

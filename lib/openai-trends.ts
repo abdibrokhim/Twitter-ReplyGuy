@@ -3,6 +3,7 @@ import { TweetCardProps } from '@/components/ui/tweet-card';
 import { FilterOptions } from '@/components/ui/tweet-filters';
 import config from './config';
 import { fetchTrends as fetchMockTrends } from './tweets';
+import { fetchTrendsWithToolhouse } from './toolhouse-trends';
 
 // Define tweet structure for OpenAI response
 interface OpenAITweet {
@@ -77,13 +78,14 @@ export async function fetchTrendsFromWeb(filters: FilterOptions): Promise<TweetC
   try {
     console.log('Fetching trends from the web using OpenAI...');
 
-    if (!process.env.OPENAI_API_KEY) {
-      console.warn('OpenAI API key not found. Using mock data instead.');
+    if (!config.aiml.apiKey) {
+      console.warn('AIML API key not found. Using mock data instead.');
       return fetchMockTrends(filters);
     }
     
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: config.aiml.apiKey,
+      baseURL: "https://api.aimlapi.com/v1"
     });
 
     // Generate search query based on filters
@@ -146,17 +148,23 @@ export async function fetchTrendsFromWeb(filters: FilterOptions): Promise<TweetC
     });
 
     if (!response.output_text) {
-      console.warn('No data found in OpenAI response');
-      return fetchMockTrends(filters);
+      console.warn('No data found in OpenAI response, trying Toolhouse fallback...');
+      return fetchTrendsWithToolhouse(filters);
     }
 
     // Parse the OpenAI response
-    const data = JSON.parse(response.output_text);
-    console.log('OpenAI response:', data);
+    let data;
+    try {
+      data = JSON.parse(response.output_text);
+      console.log('OpenAI response:', data);
+    } catch (error) {
+      console.warn('Error parsing OpenAI response, trying Toolhouse fallback...', error);
+      return fetchTrendsWithToolhouse(filters);
+    }
     
     if (!data.tweets || !Array.isArray(data.tweets) || data.tweets.length === 0) {
-      console.warn('No tweets found in OpenAI response');
-      return fetchMockTrends(filters);
+      console.warn('No tweets found in OpenAI response, trying Toolhouse fallback...');
+      return fetchTrendsWithToolhouse(filters);
     }
 
     // Convert OpenAI response to our app's format
@@ -205,8 +213,9 @@ export async function fetchTrendsFromWeb(filters: FilterOptions): Promise<TweetC
     return filtered.sort((a: TweetCardProps, b: TweetCardProps) => b.viralPotential - a.viralPotential);
   } catch (error) {
     console.error('Error fetching trends from web:', error);
-    // Fallback to mock data if OpenAI API fails
-    return fetchMockTrends(filters);
+    // Try Toolhouse fallback if OpenAI API fails
+    console.log('Trying Toolhouse fallback...');
+    return fetchTrendsWithToolhouse(filters);
   }
 }
 
@@ -215,13 +224,14 @@ export async function fetchTrendsWithFunctionCalling(filters: FilterOptions): Pr
   try {
     console.log('Fetching trends using OpenAI function calling...');
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!config.aiml.apiKey) {
       console.warn('OpenAI API key not found. Using mock data instead.');
       return fetchMockTrends(filters);
     }
     
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: config.aiml.apiKey,
+      baseURL: "https://api.aimlapi.com/v1"
     });
 
     // Generate search query based on filters
@@ -311,8 +321,8 @@ export async function fetchTrendsWithFunctionCalling(filters: FilterOptions): Pr
 
     // Check if we got a function call
     if (!response.output || response.output.length === 0 || response.output[0].type !== 'function_call') {
-      console.warn('No function call in OpenAI response');
-      return fetchMockTrends(filters);
+      console.warn('No function call in OpenAI response, trying Toolhouse fallback...');
+      return fetchTrendsWithToolhouse(filters);
     }
 
     // Get function call data
@@ -320,16 +330,22 @@ export async function fetchTrendsWithFunctionCalling(filters: FilterOptions): Pr
     const argumentsString = functionCall.arguments;
     
     if (!argumentsString) {
-      console.warn('No arguments in function call');
-      return fetchMockTrends(filters);
+      console.warn('No arguments in function call, trying Toolhouse fallback...');
+      return fetchTrendsWithToolhouse(filters);
     }
 
     // Parse the function call arguments
-    const data = JSON.parse(argumentsString);
+    let data;
+    try {
+      data = JSON.parse(argumentsString);
+    } catch (error) {
+      console.warn('Error parsing function call arguments, trying Toolhouse fallback...', error);
+      return fetchTrendsWithToolhouse(filters);
+    }
     
     if (!data.tweets || !Array.isArray(data.tweets) || data.tweets.length === 0) {
-      console.warn('No tweets found in function call arguments');
-      return fetchMockTrends(filters);
+      console.warn('No tweets found in function call arguments, trying Toolhouse fallback...');
+      return fetchTrendsWithToolhouse(filters);
     }
 
     // Convert function call response to our app's format
@@ -384,7 +400,8 @@ export async function fetchTrendsWithFunctionCalling(filters: FilterOptions): Pr
     return filtered.sort((a: TweetCardProps, b: TweetCardProps) => b.viralPotential - a.viralPotential);
   } catch (error) {
     console.error('Error fetching trends with function calling:', error);
-    // Fallback to mock data if OpenAI API fails
-    return fetchMockTrends(filters);
+    // Try Toolhouse fallback if OpenAI function calling fails
+    console.log('Trying Toolhouse fallback...');
+    return fetchTrendsWithToolhouse(filters);
   }
 } 
