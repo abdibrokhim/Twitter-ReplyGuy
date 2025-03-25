@@ -26,7 +26,7 @@ We've implemented a robust fallback system:
 
 ## Setup
 
-1. Clone this repository
+1. Clone this repository `https://github.com/abdibrokhim/Twitter-ReplyGuy`.
 2. Copy `.env.example` to `.env` and fill in your API keys:
    ```
    # OpenAI API key (primary API)

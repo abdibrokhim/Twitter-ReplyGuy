@@ -972,6 +972,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 } 
 ```
 
+> Because it's NextJS app we can use folders as routes. Learn more: https://nextjs.org/docs/app/getting-started/project-structure.
+
 ### Reply API
 
 Create a new folder `reply` inside the `api/` folder. Then a new file `route.ts` inside the `reply/` folder.
@@ -1541,6 +1543,8 @@ API_PREFIX=/api
 RUN_ENV=development 
 ```
 
+> Don't forget to add `.env` file to the `.gitignore` file. Otherwise, you will be committing your API keys to the repository. It's not a good practice.
+
 ### Installing OpenAI
 
 ```bash
@@ -1599,9 +1603,10 @@ Here we can see the reply posted successfully.
 
 ![Codebase](./public/codebase.png)
 
+#### Terminal Outputs:
 
+Below i am leaving the terminal outputs just for your reference.
 
-#### Terminal Output:
 content:  
 Is this the future or just another hype train? People still can't use cruise control properly. How much trust should we really put into AI for driving? 🤔
 
@@ -1624,5 +1629,28 @@ replies:  [
 }]
 
 
+### Next Steps
 
+That's all for tutorial.
 
+You can further improve this app by adding more features like:
+
+- Integrate `Twitter API v2` to get the tweets. Look at the [`lib/twitter.ts`](./lib/twitter.ts) file.
+
+![X Developers Dashboard](./public/x-developers-dash.png)
+
+- Use OpenAI's [`GPT-4o`](https://platform.openai.com/docs/guides/text?api-mode=chat) with `Function Calling` to get the tweets. Look at the [`lib/openai-trends.ts`](./lib/openai-trends.ts) file.
+- You can also use `Toolhouse` [Quick start (TypeScript)](https://docs.toolhouse.ai/toolhouse/quick-start-typescript) to get the tweets. Look at the [`lib/toolhouse-trends.ts`](./lib/toolhouse-trends.ts) file.
+- Or you can just make `AI Agentic` ReplyGuy. Check this folder: [`backend-python`](./backend-python/). It's FastAPI based and uses latest [`OpenAI's Agents SDK`](https://openai.github.io/openai-agents-python/) (on [Github](https://github.com/openai/openai-agents-python/)) and [`Function Calling`](https://platform.openai.com/docs/guides/function-calling?api-mode=responses#page-top). Supports [`Structured Outputs`](https://cookbook.openai.com/examples/structured_outputs_intro) to generate responses that adhere to your supplied JSON Schema
+- Make a function to directly post the reply to the selected tweet.
+- And other coool features.
+
+## Conclusion
+
+That's it. In this tutorial we learned how to build a `Twitter ReplyGuy`. We learned how to utilize `OpenAI's GPT-4o` with `Function Calling` to generate replies to the tweets. We've also learned how to use `Toolhouse` to get the tweets. We learned a lot. From just mocking data to integrating with range of APIs and tools.
+
+I hope you enjoyed this tutorial. If you have any questions, please feel free to ask me [here](https://yaps.gg) or on [X (Twitter)](https://x.com/abdibrokhim).
+
+Thank you for reading.
+
+Edit this tutorial on Github: [https://github.com/abdibrokhim/Twitter-ReplyGuy/blob/main/TUTORIAL.md](https://github.com/abdibrokhim/Twitter-ReplyGuy/blob/main/TUTORIAL.md)
