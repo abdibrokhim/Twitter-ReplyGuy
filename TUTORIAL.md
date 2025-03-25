@@ -1,5 +1,7 @@
 Tutorial: Build a Twitter reply generator using AI/ML API and Twitter API V2.
 
+![promo-image](./public//reply-guy-cover.png)
+
 Do you want to be a ReplyGuy? And get a lot of profile views?
 
 This tutorial will show you how to build a ReplyGuy (e.g., reply generator) using AI/ML API and Twitter API V2. 

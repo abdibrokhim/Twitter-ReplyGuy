@@ -1,5 +1,7 @@
 # ReplyGuy - Twitter Trend Analysis Tool
 
+![promo-image](./public//reply-guy-cover.png)
+
 ReplyGuy helps you find trending tweets and generates engaging replies to boost your engagement.
 
 ## Features
